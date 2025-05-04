@@ -4,9 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIエージェントへようこそ</title>
+    <link rel="stylesheet" href="/css/output.css">
 </head>
 <body>
     <h1>AIエージェントへようこそ</h1>
     <p>このページでは、AIエージェントの機能と役割について説明します。</p>
+
+    <form method="POST" action="/welcome/aiagent">
+        <label for="text">テキストを入力してください:</label>
+        <textarea id="text" name="text" rows="4" class="w-full h-3/5" required></textarea>
+        <button type="submit">送信</button>
+    </form>
+
+    <% if (postedText) { %>
+        <h2>ポストされた内容:</h2>
+        <pre><%= postedText %></pre>
+    <% } %>
 </body>
 </html>
