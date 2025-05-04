@@ -1,0 +1,50 @@
+{
+    "name": "dev",
+    "context": "..",
+    "dockerFile": "Dockerfile",
+    "build": {
+        "target": "development"
+    },
+    "runArgs": [
+        "--env-file",
+        ".devcontainer/.env"
+    ],
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.aws,target=/home/node/.aws,type=bind,consistency=cached",
+        "source=devcontainer-sqlimbda,target=/opt/poetry/venv/lib/python3.11/,type=volume"
+    ],
+    "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+    "remoteEnv": {
+        // ホスト側のプロジェクトのルートパス
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+    },
+    "features": { // https://containers.dev/features
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "version": "latest",
+            "dockerSocketBindMount": "/var/run/docker.sock:/var/run/docker.sock:cached",
+            "dockerComposeVersion": "latest"
+        }
+    },
+    // docker-outside-of-docker用にホストのフォルダをワークスペースとしてバインドマウントする
+    "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+    "workspaceFolder": "${localWorkspaceFolder}",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "ms-vscode.live-server",
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.vscode-pylance",
+                "oderwat.indent-rainbow",
+                "usernamehw.errorlens",
+                "njpwerner.autodocstring",
+                "eamodio.gitlens",
+                "alexcvzz.vscode-sqlite", // Ctrl+Shift+P > sqlite: open databaseで選んだファイルが
+                "qwtel.sqlite-viewer",    // サイドバーのSQLITE EXPLOEREに出てきてそこからクエリ実行する
+                "alefragnani.Bookmarks"
+            ]
+        }
+    }
+}

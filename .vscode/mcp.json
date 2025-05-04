@@ -1,0 +1,38 @@
+{
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "githubtoken-key",
+            "description": "GitHub Access token",
+            "password": true
+        }
+    ],
+    "servers": {
+        "github": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "GITHUB_PERSONAL_ACCESS_TOKEN",
+                "ghcr.io/github/github-mcp-server"
+            ],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:githubtoken-key}"
+            }
+        },
+        "git": {
+            "command": "python",
+            "args": ["-m", "mcp_server_git", "--repository", "${workspaceFolder}"],
+        },
+        "playwright": {
+            "command": "npx",
+            "args": [
+                "@playwright/mcp@latest",
+                "--browser", "msedge",
+                "--vision"
+            ]
+        }
+    }
+}
