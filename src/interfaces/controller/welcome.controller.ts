@@ -15,11 +15,11 @@ export class WelcomeController {
   @Get()
   @Render('welcome/aiagent')
   getAIWelcome() {
-    return { 
-      title: 'AIエージェントへようこそ', 
-      description: 'このページでは、AIエージェントの機能と役割について説明します。', 
+    return {
+      title: 'AIエージェントへようこそ',
+      description: 'このページでは、AIエージェントの機能と役割について説明します。',
       postedText: '',
-      processedText: '' 
+      processedText: ''
     };
   }
 
@@ -33,11 +33,11 @@ export class WelcomeController {
       processedText = 'エラーが発生しました: ' + (error instanceof Error ? error.message : String(error));
     }
 
-    return { 
-      title: 'AIエージェントへようこそ', 
-      description: 'このページでは、AIエージェントの機能と役割について説明します。', 
-      postedText: text, 
-      processedText 
+    return {
+      title: 'AIエージェントへようこそ',
+      description: 'このページでは、AIエージェントの機能と役割について説明します。',
+      postedText: text,
+      processedText
     };
   }
 }
