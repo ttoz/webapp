@@ -16,4 +16,10 @@ describe('WelcomeController', () => {
     const result = controller.getAIWelcome();
     expect(result).toContain('AIエージェントへようこそ');
   });
+
+  it('AIで処理された結果を返す', async () => {
+    const inputText = 'テスト入力';
+    const result = await controller.postText(inputText);
+    expect(result.processedText).toBe('AI処理済み: テスト入力');
+  });
 });
