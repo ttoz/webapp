@@ -1,16 +1,10 @@
 import { Controller, Get, Post, Body, Render } from '@nestjs/common';
-import { MastraService } from '../../domain/mastra/service/mastra.service';
 import { ProcessTextUseCase } from '../../usecase/process-text.usecase';
-import { Effect } from 'effect';
+
 
 @Controller('welcome/aiagent')
 export class WelcomeController {
-  private readonly processTextUseCase: ProcessTextUseCase;
-
-  constructor() {
-    const mastraService = new MastraService();
-    this.processTextUseCase = new ProcessTextUseCase(mastraService);
-  }
+  constructor(private readonly processTextUseCase: ProcessTextUseCase) {}
 
   @Get()
   @Render('welcome/aiagent')
