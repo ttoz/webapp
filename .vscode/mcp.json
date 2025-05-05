@@ -23,8 +23,14 @@
             }
         },
         "git": {
-            "command": "uvx",
-            "args": ["mcp-server-git"]
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-i",
+                "--mount", "type=bind,src=${workspaceFolder},dst=/app",
+                "mcp/git"
+            ]
         },
         "playwright": {
             "command": "npx",
