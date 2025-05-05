@@ -23,8 +23,8 @@
             }
         },
         "git": {
-            "command": "python",
-            "args": ["-m", "mcp_server_git", "--repository", "${workspaceFolder}"],
+            "command": "uvx",
+            "args": ["mcp-server-git"]
         },
         "playwright": {
             "command": "npx",

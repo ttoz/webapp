@@ -37,14 +37,7 @@ ENV PYTHONUNBUFFERED=1 \
     \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    \
-    POETRY_VERSION=1.1.5 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_CREATE=false
-ENV PATH="$POETRY_HOME/bin:$PATH"
-RUN curl -sSL https://install.python-poetry.org | python3 -
-RUN chown -R node:node $POETRY_HOME
+    PIP_DEFAULT_TIMEOUT=100
 
 
 FROM python-node-base as browser-base
@@ -57,8 +50,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 FROM browser-base as development
-ENV POETRY_NO_INTERACTION=1
 USER node
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 
 FROM development as builder-base
