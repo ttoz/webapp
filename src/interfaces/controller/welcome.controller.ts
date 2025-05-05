@@ -1,8 +1,16 @@
 import { Controller, Get, Post, Body, Render } from '@nestjs/common';
+import { MastraService } from '../../domain/mastra/service/mastra.service';
+import { ProcessTextUseCase } from '../../usecase/process-text.usecase';
+import { Effect } from 'effect';
 
 @Controller('welcome/aiagent')
 export class WelcomeController {
-  private postedText: string | null = null;
+  private readonly processTextUseCase: ProcessTextUseCase;
+
+  constructor() {
+    const mastraService = new MastraService();
+    this.processTextUseCase = new ProcessTextUseCase(mastraService);
+  }
 
   @Get()
   @Render('welcome/aiagent')
@@ -10,14 +18,26 @@ export class WelcomeController {
     return { 
       title: 'AIエージェントへようこそ', 
       description: 'このページでは、AIエージェントの機能と役割について説明します。', 
-      postedText: this.postedText || '' 
+      postedText: '',
+      processedText: '' 
     };
   }
 
   @Post()
   @Render('welcome/aiagent')
-  postText(@Body('text') text: string) {
-    this.postedText = text;
-    return { title: 'AIエージェントへようこそ', description: 'このページでは、AIエージェントの機能と役割について説明します。', postedText: this.postedText };
+  async postText(@Body('text') text: string) {
+    let processedText = '';
+    try {
+      processedText = await this.processTextUseCase.execute(text);
+    } catch (error) {
+      processedText = 'エラーが発生しました: ' + (error instanceof Error ? error.message : String(error));
+    }
+
+    return { 
+      title: 'AIエージェントへようこそ', 
+      description: 'このページでは、AIエージェントの機能と役割について説明します。', 
+      postedText: text, 
+      processedText 
+    };
   }
 }
