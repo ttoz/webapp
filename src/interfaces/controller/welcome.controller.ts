@@ -28,16 +28,16 @@ export class WelcomeController {
   async postText(@Body('text') text: string) {
     let processedText = '';
     try {
-      processedText = await Effect.runPromise(this.processTextUseCase.execute(text));
+      processedText = await this.processTextUseCase.execute(text);
     } catch (error) {
-      processedText = 'エラーが発生しました: ' + error.message;
+      processedText = 'エラーが発生しました: ' + (error instanceof Error ? error.message : String(error));
     }
 
     return { 
       title: 'AIエージェントへようこそ', 
       description: 'このページでは、AIエージェントの機能と役割について説明します。', 
       postedText: text, 
-      processedText: processedText 
+      processedText 
     };
   }
 }
