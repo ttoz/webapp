@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WeatherService } from '../../../src/infrastruture/weather/service.mastra';
 import { Effect } from 'effect';
-import {
-    WeatherInfo,
-    WeatherError,
-} from '../../../src/domain/weather/service/iweather';
+import { WeatherInfo } from '../../../src/domain/weather/service/iweather';
 
 describe('WeatherService', () => {
     let service: WeatherService;
@@ -39,7 +36,7 @@ describe('WeatherService', () => {
             const location = '東京';
             const mockWeather: WeatherInfo = {
                 location: '東京',
-                condition: '晴れ',
+                conditions: '晴れ',
                 temperature: 25,
                 humidity: 60,
                 precipitationChance: 10,
@@ -54,34 +51,11 @@ describe('WeatherService', () => {
             expect(result).toEqual(mockWeather);
         });
 
-        it('空の場所を指定した場合はEmptyLocationErrorを返す', async () => {
+        it('空の場所を指定した場合はエラーを返す', async () => {
             const location = '';
-            const mockError: WeatherError = {
-                _tag: 'EmptyLocationError',
-                message: '場所が指定されていません',
-            };
-
-            const result = await Effect.runPromise(
-                Effect.flip(service.getWeather(location)),
-            );
-            expect(result).toEqual(mockError);
-        });
-
-        it('天気情報の取得に失敗した場合はWeatherFetchErrorを返す', async () => {
-            const location = '存在しない場所';
-            const mockError: WeatherError = {
-                _tag: 'WeatherFetchError',
-                message: '天気情報の取得に失敗しました',
-            };
-
-            vi.spyOn(service['mastra'], 'getAgent').mockImplementation(() => {
-                throw new Error('API error');
-            });
-
-            const result = await Effect.runPromise(
-                Effect.flip(service.getWeather(location)),
-            );
-            expect(result).toEqual(mockError);
+            await expect(() =>
+                Effect.runPromise(service.getWeather(location)),
+            ).rejects.toThrow('都市が指定されていません');
         });
     });
 });

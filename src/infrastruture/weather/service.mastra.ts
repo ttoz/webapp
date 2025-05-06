@@ -8,7 +8,6 @@ import { Effect } from 'effect';
 import {
     IWeatherService,
     WeatherInfo,
-    WeatherError,
 } from 'src/domain/weather/service/iweather';
 import { Injectable } from '@nestjs/common';
 
@@ -40,34 +39,37 @@ export class WeatherService implements IWeatherService {
         });
     }
 
-    getWeather(location: string): Effect.Effect<WeatherInfo, WeatherError> {
-        if (!location) {
-            return Effect.fail({
-                _tag: 'EmptyLocationError',
-                message: '場所が指定されていません',
-            });
-        }
+    getWeather(city_name: string): Effect.Effect<WeatherInfo, Error> {
+        return Effect.promise(async () => {
+            if (!city_name) throw new Error('都市が指定されていません');
 
-        return Effect.tryPromise({
-            try: async () => {
-                const agent = this.mastra.getAgent('weatherAgent');
-                const prompt = `${location}の天気情報を以下のJSON形式で返してください:
-                {
-                    "location": "場所の名前",
-                    "condition": "天気状態（晴れ、曇り、雨など）",
-                    "temperature": 気温（数値）,
-                    "humidity": 湿度（0-100の数値）,
-                    "precipitationChance": 降水確率（0-100の数値）
-                }
-                回答は必ずこの形式のJSONのみを返してください。`;
+            const agent = this.mastra.getAgent('weatherAgent');
+            const res = await agent.generate(city_name);
+            const [role_assistant1, role_tool, role_assistant2] =
+                res.response.messages;
+            const [{ type, result, toolName }] = role_tool.content as any;
 
-                const res = await agent.generate(prompt);
-                return JSON.parse(res.text) as WeatherInfo;
-            },
-            catch: () => ({
-                _tag: 'WeatherFetchError',
-                message: '天気情報の取得に失敗しました',
-            }),
+            if (type !== 'tool-result')
+                throw new Error(`ツールの結果が取得できませんでした:${type}`);
+            if (toolName !== 'weatherTool')
+                throw new Error(`天気情報のツールではありません:${toolName}`);
+
+            const {
+                conditions,
+                location,
+                temperature,
+                humidity,
+                feelsLike,
+                windGust,
+                windSpeed,
+            } = result;
+            return {
+                conditions,
+                location,
+                temperature,
+                humidity,
+                precipitationChance: 0,
+            } as WeatherInfo;
         });
     }
 }
