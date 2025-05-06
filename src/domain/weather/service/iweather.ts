@@ -8,9 +8,9 @@ export interface WeatherInfo {
     precipitationChance: number;
 }
 
-export type WeatherError = 
-    | { _tag: 'EmptyLocationError', message: string }
-    | { _tag: 'WeatherFetchError', message: string };
+export type WeatherError =
+    | { _tag: 'EmptyLocationError'; message: string }
+    | { _tag: 'WeatherFetchError'; message: string };
 
 export interface IWeatherService {
     chatWeather(msg: string): Effect.Effect<string, Error>;

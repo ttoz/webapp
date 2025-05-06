@@ -5,7 +5,11 @@ import { weatherWorkflow } from './mastra/workflows';
 import { weatherAgent } from './mastra/agents';
 
 import { Effect } from 'effect';
-import { IWeatherService, WeatherInfo, WeatherError } from 'src/domain/weather/service/iweather';
+import {
+    IWeatherService,
+    WeatherInfo,
+    WeatherError,
+} from 'src/domain/weather/service/iweather';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -27,15 +31,12 @@ export class WeatherService implements IWeatherService {
     }
 
     chatWeather(text: string): Effect.Effect<string, Error> {
-        return Effect.try({
-            try: async () => {
-                if (!text) throw new Error('テキストが空です');
-    
-                const agent = this.mastra.getAgent('weatherAgent');
-                const res = await agent.generate(text);
-                return res.text;
-            },
-            catch: (error) => new Error(error instanceof Error ? error.message : String(error))
+        return Effect.promise(async () => {
+            if (!text) throw new Error('テキストが空です');
+
+            const agent = this.mastra.getAgent('weatherAgent');
+            const res = await agent.generate(text);
+            return res.text;
         });
     }
 
@@ -43,7 +44,7 @@ export class WeatherService implements IWeatherService {
         if (!location) {
             return Effect.fail({
                 _tag: 'EmptyLocationError',
-                message: '場所が指定されていません'
+                message: '場所が指定されていません',
             });
         }
 
@@ -65,8 +66,8 @@ export class WeatherService implements IWeatherService {
             },
             catch: () => ({
                 _tag: 'WeatherFetchError',
-                message: '天気情報の取得に失敗しました'
-            })
+                message: '天気情報の取得に失敗しました',
+            }),
         });
     }
 }

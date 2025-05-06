@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WeatherService } from '../../../src/infrastruture/weather/service.mastra';
 import { Effect } from 'effect';
-import { WeatherInfo, WeatherError } from '../../../src/domain/weather/service/iweather';
+import {
+    WeatherInfo,
+    WeatherError,
+} from '../../../src/domain/weather/service/iweather';
 
 describe('WeatherService', () => {
     let service: WeatherService;
@@ -39,13 +42,15 @@ describe('WeatherService', () => {
                 condition: '晴れ',
                 temperature: 25,
                 humidity: 60,
-                precipitationChance: 10
+                precipitationChance: 10,
             };
 
             const mockResponse = Effect.succeed(mockWeather);
             vi.spyOn(service, 'getWeather').mockReturnValue(mockResponse);
 
-            const result = await Effect.runPromise(service.getWeather(location));
+            const result = await Effect.runPromise(
+                service.getWeather(location),
+            );
             expect(result).toEqual(mockWeather);
         });
 
@@ -53,11 +58,11 @@ describe('WeatherService', () => {
             const location = '';
             const mockError: WeatherError = {
                 _tag: 'EmptyLocationError',
-                message: '場所が指定されていません'
+                message: '場所が指定されていません',
             };
 
             const result = await Effect.runPromise(
-                Effect.flip(service.getWeather(location))
+                Effect.flip(service.getWeather(location)),
             );
             expect(result).toEqual(mockError);
         });
@@ -66,7 +71,7 @@ describe('WeatherService', () => {
             const location = '存在しない場所';
             const mockError: WeatherError = {
                 _tag: 'WeatherFetchError',
-                message: '天気情報の取得に失敗しました'
+                message: '天気情報の取得に失敗しました',
             };
 
             vi.spyOn(service['mastra'], 'getAgent').mockImplementation(() => {
@@ -74,7 +79,7 @@ describe('WeatherService', () => {
             });
 
             const result = await Effect.runPromise(
-                Effect.flip(service.getWeather(location))
+                Effect.flip(service.getWeather(location)),
             );
             expect(result).toEqual(mockError);
         });
