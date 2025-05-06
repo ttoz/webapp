@@ -1,16 +1,17 @@
+import { Inject } from '@nestjs/common';
 import { Effect } from 'effect';
-import { MastraService } from '../domain/mastra/service/mastra.service';
-
+import { IWeatherService } from '../domain/weather/service/iweather';
+import { ConstantTokens } from '../app.constants';
 export class ProcessTextUseCase {
-  private readonly mastraService: MastraService
-  constructor() {
-    this.mastraService = new MastraService();
-  }
+  constructor(
+    @Inject(ConstantTokens.WeatherService)
+    private readonly weatherService: IWeatherService
+  ) {}
 
   async execute(text: string): Promise<string> {
     const that = this;
     const program = Effect.gen(function* () {
-      const str = yield* that.mastraService.processText(text);
+      const str = yield* that.weatherService.chatWeather(text);
       return str;
     });
     return await Effect.runPromise(program);

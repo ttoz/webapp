@@ -1,22 +1,24 @@
 import { Mastra } from '@mastra/core/mastra';
 import { createLogger } from '@mastra/core/logger';
 import { LibSQLStore } from '@mastra/libsql';
-import { weatherWorkflow } from './workflows';
-import { weatherAgent } from './agents';
+import { weatherWorkflow } from './mastra/workflows';
+import { weatherAgent } from './mastra/agents';
 
 import { Effect } from 'effect';
+import { IWeatherService } from 'src/domain/weather/service/iweather';
+import { Injectable } from '@nestjs/common';
 
-export class MastraService {
+@Injectable()
+export class WeatherService implements IWeatherService {
   /**
    * Mastraサンプルをサービスとして組み込み
    *
    * @param text
    * @returns
    */
-  processText(text: string): Effect.Effect<string, Error> {
+  chatWeather(text: string): Effect.Effect<string, Error> {
     return Effect.promise(async () => {
       if (!text) throw new Error('テキストが空です');
-      return "OK";
 
       const mastra = new Mastra({
         workflows: { weatherWorkflow },
@@ -33,6 +35,12 @@ export class MastraService {
       const agent = mastra.getAgent('weatherAgent');
       const res = await agent.generate(text);
       return res.text;
+    });
+  }
+
+  getWeather(text: string): Effect.Effect<string, Error> {
+    return Effect.promise(async () => {
+      throw new Error('Not implemented');
     });
   }
 }
