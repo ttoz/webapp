@@ -33,6 +33,11 @@
                 "--browser", "msedge",
                 "--vision"
             ]
-        }
+        },
+		"eslint": {
+			"command": "npx",
+			"args": ["eslint", "--mcp"],
+			"env": {}
+		}
     }
 }

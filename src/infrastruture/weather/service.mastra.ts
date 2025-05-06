@@ -5,42 +5,71 @@ import { weatherWorkflow } from './mastra/workflows';
 import { weatherAgent } from './mastra/agents';
 
 import { Effect } from 'effect';
-import { IWeatherService } from 'src/domain/weather/service/iweather';
+import {
+    IWeatherService,
+    WeatherInfo,
+} from 'src/domain/weather/service/iweather';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class WeatherService implements IWeatherService {
-    /**
-     * Mastraサンプルをサービスとして組み込み
-     *
-     * @param text
-     * @returns
-     */
+    private mastra: Mastra;
+
+    constructor() {
+        this.mastra = new Mastra({
+            workflows: { weatherWorkflow },
+            agents: { weatherAgent },
+            storage: new LibSQLStore({
+                url: ':memory:',
+            }),
+            logger: createLogger({
+                name: 'Mastra',
+                level: 'info',
+            }),
+        });
+    }
+
     chatWeather(text: string): Effect.Effect<string, Error> {
         return Effect.promise(async () => {
             if (!text) throw new Error('テキストが空です');
 
-            const mastra = new Mastra({
-                workflows: { weatherWorkflow },
-                agents: { weatherAgent },
-                storage: new LibSQLStore({
-                    // stores telemetry, evals, ... into memory storage, if it needs to persist, change to file:../mastra.db
-                    url: ':memory:',
-                }),
-                logger: createLogger({
-                    name: 'Mastra',
-                    level: 'info',
-                }),
-            });
-            const agent = mastra.getAgent('weatherAgent');
+            const agent = this.mastra.getAgent('weatherAgent');
             const res = await agent.generate(text);
             return res.text;
         });
     }
 
-    getWeather(text: string): Effect.Effect<string, Error> {
+    getWeather(city_name: string): Effect.Effect<WeatherInfo, Error> {
         return Effect.promise(async () => {
-            throw new Error('Not implemented');
+            if (!city_name) throw new Error('都市が指定されていません');
+
+            const agent = this.mastra.getAgent('weatherAgent');
+            const res = await agent.generate(city_name);
+            const [role_assistant1, role_tool, role_assistant2] =
+                res.response.messages;
+            const [{ type, result, toolName }] = role_tool.content as any;
+
+            if (type !== 'tool-result')
+                throw new Error(`ツールの結果が取得できませんでした:${type}`);
+            if (toolName !== 'weatherTool')
+                throw new Error(`天気情報のツールではありません:${toolName}`);
+
+            const {
+                conditions,
+                location,
+                temperature,
+                humidity,
+                feelsLike,
+                windGust,
+                windSpeed,
+            } = result;
+            return {
+                conditions,
+                location,
+                temperature,
+                humidity,
+                precipitationChance: 0,
+            } as WeatherInfo;
         });
     }
 }

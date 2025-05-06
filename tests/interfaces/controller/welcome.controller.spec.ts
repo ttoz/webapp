@@ -31,9 +31,10 @@ describe('WelcomeController', () => {
             controller['processTextUseCase'] = mockProcessTextUseCase;
 
             const inputText = 'AI処理済み: テスト入力';
-            const result = await controller.postText(inputText);
+            const result = await controller.postText(inputText, '');
             expect(mockProcessTextUseCase.execute).toHaveBeenCalledWith(
                 inputText,
+                '',
             );
             expect(result.postedText).toBe(inputText);
             expect(result.processedText).toBe('AI処理済み: テスト入力');
@@ -46,9 +47,10 @@ describe('WelcomeController', () => {
             controller['processTextUseCase'] = mockProcessTextUseCase;
 
             const inputText = '';
-            const result = await controller.postText(inputText);
+            const result = await controller.postText(inputText, '');
             expect(mockProcessTextUseCase.execute).toHaveBeenCalledWith(
                 inputText,
+                '',
             );
             expect(result.processedText).toContain('エラーが発生しました');
             expect(result.processedText).toContain('テキストが空です');

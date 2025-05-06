@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Render } from '@nestjs/common';
 import { ProcessTextUseCase } from '../../usecase/process-text.usecase';
+import { json } from 'stream/consumers';
 
 @Controller('welcome/aiagent')
 export class WelcomeController {
@@ -19,10 +20,16 @@ export class WelcomeController {
 
     @Post()
     @Render('welcome/aiagent')
-    async postText(@Body('text') text: string) {
+    async postText(
+        @Body('text') text: string,
+        @Body('jsonmode') jsonmode: string,
+    ) {
         let processedText = '';
         try {
-            processedText = await this.processTextUseCase.execute(text);
+            processedText = await this.processTextUseCase.execute(
+                text,
+                jsonmode,
+            );
         } catch (error) {
             processedText =
                 'エラーが発生しました: ' +
