@@ -1,21 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { WelcomeController } from './interfaces/controller/welcome.controller';
-import { MastraService } from './domain/mastra/service/mastra.service';
 import { ProcessTextUseCase } from './usecase/process-text.usecase';
+import { WeatherService } from './infrastruture/weather/service.mastra';
+import { ConstantTokens } from './app.constants';
 
 @Module({
-  imports: [],
-  controllers: [AppController, WelcomeController],
-  providers: [
-    AppService,
-    MastraService,
-    {
-      provide: ProcessTextUseCase,
-      useFactory: (mastraService: MastraService) => new ProcessTextUseCase(mastraService),
-      inject: [MastraService],
-    },
-  ],
+    imports: [],
+    controllers: [WelcomeController],
+    providers: [
+        ProcessTextUseCase,
+        {
+            provide: ConstantTokens.WeatherService,
+            useClass: WeatherService,
+        },
+    ],
 })
 export class AppModule {}
