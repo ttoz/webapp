@@ -4,8 +4,8 @@ import { Memory } from '@mastra/memory';
 import { weatherTool } from './tools';
 
 export const weatherAgent = new Agent({
-  name: 'Weather Agent',
-  instructions: `
+    name: 'Weather Agent',
+    instructions: `
       You are a helpful weather assistant that provides accurate weather information.
 
       Your primary function is to help users get weather details for specific locations. When responding:
@@ -17,15 +17,15 @@ export const weatherAgent = new Agent({
 
       Use the weatherTool to fetch current weather data.
 `,
-  model: openai('gpt-4o'),
-  tools: { weatherTool },
-  memory: new Memory({
-    options: {
-      lastMessages: 10,
-      semanticRecall: false,
-      threads: {
-        generateTitle: false,
-      },
-    },
-  }),
+    model: openai('gpt-4o'),
+    tools: { weatherTool },
+    memory: new Memory({
+        options: {
+            lastMessages: 10,
+            semanticRecall: false,
+            threads: {
+                generateTitle: false,
+            },
+        },
+    }),
 });
