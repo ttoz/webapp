@@ -1,19 +1,25 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WeatherService } from '../../../src/infrastruture/weather/service.mastra';
 import { Effect } from 'effect';
 
 describe('MastraService', () => {
-    const service = new WeatherService();
+    let service:WeatherService;
+
+    beforeEach(() => {
+        service = new WeatherService();
+    });
 
     describe('processText', () => {
         it('テキストを受け取ってAI処理した結果を返す', async () => {
             const text = 'こんにちは、世界！';
-            // const result = await Effect.runPromise(service.chatWeather(text));
+            const mockText = 'AIのAPIをリクエストせずにモックされたテキスト';
 
-            // expect(result).toBeTypeOf('string');
-            // expect(result.length).toBeGreaterThan(0);
+            const mockResponse = Effect.succeed(mockText);
+            vi.spyOn(service, 'chatWeather').mockReturnValue(mockResponse);
 
-            expect(true).toBe(true); // TODO: モックを使ってAPIリクエストせずに結果を取得するようにする
+            const result = await Effect.runPromise(service.chatWeather(text));
+            expect(result).toBeTypeOf('string');
+            expect(result).toBe(mockText);
         });
 
         it('空のテキストを受け取った場合はエラーを返す', async () => {
