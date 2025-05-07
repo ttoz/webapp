@@ -22,13 +22,13 @@ export class WelcomeController {
     @Render('welcome/aiagent')
     async postText(
         @Body('text') text: string,
-        @Body('jsonmode') jsonmode: string,
+        @Body('mode') mode: string,
     ) {
         let processedText = '';
         try {
             processedText = await this.processTextUseCase.execute(
                 text,
-                jsonmode,
+                mode,
             );
         } catch (error) {
             processedText =

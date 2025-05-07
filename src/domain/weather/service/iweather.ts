@@ -15,4 +15,5 @@ export interface WeatherInfo {
 export interface IWeatherService {
     chatWeather(msg: string): Effect.Effect<string, Error>;
     getWeather(location: string): Effect.Effect<WeatherInfo, Error>;
+    planning(city: string): Effect.Effect<string, Error>;
 }

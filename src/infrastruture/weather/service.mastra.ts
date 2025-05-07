@@ -39,12 +39,12 @@ export class WeatherService implements IWeatherService {
         });
     }
 
-    getWeather(city_name: string): Effect.Effect<WeatherInfo, Error> {
+    getWeather(city: string): Effect.Effect<WeatherInfo, Error> {
         return Effect.promise(async () => {
-            if (!city_name) throw new Error('都市が指定されていません');
+            if (!city) throw new Error('都市が指定されていません');
 
             const agent = this.mastra.getAgent('weatherAgent');
-            const res = await agent.generate(city_name);
+            const res = await agent.generate(city);
             const [role_assistant1, role_tool, role_assistant2] =
                 res.response.messages;
             const [{ type, result, toolName }] = role_tool.content as any;
@@ -70,6 +70,32 @@ export class WeatherService implements IWeatherService {
                 humidity,
                 precipitationChance: 0,
             } as WeatherInfo;
+        });
+    }
+
+    planning(city: string): Effect.Effect<string, Error> {
+        return Effect.promise(async () => {
+            if (!city) throw new Error('都市が指定されていません');
+
+            const wflow = this.mastra.getWorkflow('weatherWorkflow'); 
+            const { runId, start } = await wflow.createRun();
+            const runResult = await start({ triggerData: { city } });
+            const { activePaths, results, timestamp } = runResult;
+            console.log(runId, new Date(timestamp));
+            if (activePaths.size === 0) { // Map型
+                throw new Error('ワークフローが完了していません');
+            }
+            activePaths.forEach((pathData, stepId) => {
+                console.log('stepId', stepId);
+                console.log('pathStatus', pathData.status);
+                console.log('pathStepPath', pathData.stepPath.join(','));
+            });
+            Object.entries(results).forEach(([ stepId, stepData ]) => {
+                console.log('stepId', stepId);
+                console.log('stepStatus', stepData.status);
+                console.log('stepOutput', stepData['output']);
+            });
+            return JSON.stringify(results);
         });
     }
 }

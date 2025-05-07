@@ -11,9 +11,12 @@ export class ProcessTextUseCase {
     async execute(text: string, mode: string): Promise<string> {
         const that = this;
         const program = Effect.gen(function* () {
-            if (mode === 'true') {
+            if (mode === 'json') {
                 const weatherInfo = yield* that.weatherService.getWeather(text);
-                return JSON.stringify(weatherInfo);
+                return JSON.stringify(weatherInfo, null, 2);
+            } else if (mode === 'planning') {
+                const plan = yield* that.weatherService.planning(text);
+                return plan;
             } else {
                 const str = yield* that.weatherService.chatWeather(text);
                 return str;

@@ -14,7 +14,11 @@
         <label for="text">テキストを入力してください:</label>
         <textarea id="text" name="text" rows="4" class="w-full h-3/5" required></textarea>
         <label for="jsonmode">JSONモード:</label>
-        <input type="checkbox" id="jsonmode" name="jsonmode" value="true">
+        <input type="radio" id="jsonmode" name="mode" value="json">
+        <label for="planningmode">プランモード:</label>
+        <input type="radio" id="planningmode" name="mode" value="planning" checked>
+        <label for="chatmode">チャットモード:</label>
+        <input type="radio" id="chatmode" name="mode" value="chat">
         <button type="submit">送信</button>
     </form>
 
