@@ -5,6 +5,30 @@
             "id": "githubtoken-key",
             "description": "GitHub Access token",
             "password": true
+        },
+        {
+            "type": "promptString",
+            "id": "obsidianapi-key",
+            "description": "Obsidian Local REST API key",
+            "password": true
+        },
+        {
+            "type": "promptString",
+            "id": "slack-teamid",
+            "description": "Slack teamid",
+            "password": true
+        },
+        {
+            "type": "promptString",
+            "id": "slack-channelid",
+            "description": "Slack channelid",
+            "password": true
+        },
+        {
+            "type": "promptString",
+            "id": "slack-bottoken",
+            "description": "Slack bottoken",
+            "password": true
         }
     ],
     "servers": {
@@ -34,10 +58,72 @@
                 "--vision"
             ]
         },
-		"eslint": {
-			"command": "npx",
-			"args": ["eslint", "--mcp"],
-			"env": {}
-		}
+        "eslint": {
+            "command": "npx",
+            "args": ["eslint", "--mcp"],
+            "env": {}
+        },
+        "dockermcptoolkit": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "alpine/socat",
+                "STDIO",
+                "TCP:host.docker.internal:8811"
+            ]
+        },
+        "obsidian": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "OBSIDIAN_HOST",
+                "-e",
+                "OBSIDIAN_API_KEY",
+                "mcp/obsidian"
+            ],
+            "env": {
+                "OBSIDIAN_HOST": "host.docker.internal",
+                "OBSIDIAN_API_KEY": "${input:obsidianapi-key}"
+            }
+        },
+        "puppeteer": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "DOCKER_CONTAINER",
+                "mcp/puppeteer"
+            ],
+            "env": {
+                "DOCKER_CONTAINER": "true"
+            }
+        },
+        "slack": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "SLACK_TEAM_ID",
+                "-e",
+                "SLACK_CHANNEL_IDS",
+                "-e",
+                "SLACK_BOT_TOKEN",
+                "mcp/slack"
+            ],
+            "env": {
+                "SLACK_TEAM_ID": "${input:slack-teamid}",
+                "SLACK_CHANNEL_IDS": "${input:slack-channelid}",
+                "SLACK_BOT_TOKEN": "${input:slack-bottoken}",
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 {
     "terminal.integrated.enableImages": true,
     "git.openRepositoryInParentFolders": "never",
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
     "github.copilot.chat.commitMessageGeneration.instructions": [
         {
             "text": "作業内容は必ず日本語で記述する。可能なら作業内容に対応するイシューのURLを含める。"
