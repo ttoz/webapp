@@ -58,4 +58,43 @@ describe('WeatherService', () => {
             ).rejects.toThrow('都市が指定されていません');
         });
     });
+
+    describe('planning', () => {
+        it('都市名を指定して天気に基づく行動計画を取得できる', async () => {
+            const city = '京都';
+            const mockResults = {
+                'fetch-weather': {
+                    status: 'completed',
+                    output: [{
+                        date: '2025-05-07',
+                        maxTemp: 18.3,
+                        minTemp: 10.6,
+                        precipitationChance: 9,
+                        condition: 'Dense drizzle',
+                        location: '京都'
+                    }]
+                },
+                'plan-activities': {
+                    status: 'completed',
+                    output: {
+                        activities: '天気に基づく行動計画'
+                    }
+                }
+            };
+
+            const mockResponse = Effect.succeed(JSON.stringify(mockResults));
+            vi.spyOn(service, 'planning').mockReturnValue(mockResponse);
+
+            const result = await Effect.runPromise(service.planning(city));
+            expect(result).toBe(JSON.stringify(mockResults));
+            expect(() => JSON.parse(result)).not.toThrow();
+        });
+
+        it('空の都市名を指定した場合はエラーを返す', async () => {
+            const city = '';
+            await expect(() =>
+                Effect.runPromise(service.planning(city)),
+            ).rejects.toThrow('都市が指定されていません');
+        });
+    });
 });
